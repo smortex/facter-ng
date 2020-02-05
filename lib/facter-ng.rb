@@ -78,6 +78,10 @@ module Facter
     LegacyFacter.search_external_path
   end
 
+  def self.clear
+    LegacyFacter.clear
+  end
+
   def self.core_value(user_query)
     user_query = user_query.to_s
     resolved_facts = Facter::FactManager.instance.resolve_core([user_query])
