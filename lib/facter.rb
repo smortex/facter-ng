@@ -111,6 +111,9 @@ module Facter
     @options.priority_options = cli_options
     @options.refresh(args)
 
+    @logger ||= Log.new(self)
+    ARGV.delete('query')
+    @logger.info("executed with command line: #{ARGV.join("\s")}")
     resolved_facts = Facter::FactManager.instance.resolve_facts(@options, args)
     CacheManager.invalidate_all_caches
     fact_formatter = Facter::FormatterFactory.build(@options)
