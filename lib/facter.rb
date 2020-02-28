@@ -41,6 +41,10 @@ module Facter
     nil
   end
 
+  def self.on_message(&block)
+    Facter::Log.on_message(&block)
+  end
+
   def self.debugging?
     Options[:debug]
   end
@@ -102,7 +106,7 @@ module Facter
   end
 
   def self.to_hash
-    @options.priority_options = { to_hash: true }
+    @options.priority_options[:to_hash] = true
     @options.refresh
     resolved_facts = Facter::FactManager.instance.resolve_facts(@options)
     CacheManager.invalidate_all_caches

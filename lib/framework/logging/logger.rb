@@ -8,6 +8,21 @@ module Facter
     @@legacy_logger = LegacyLogger.new
     @@logger = MultiLogger.new([@@legacy_logger, @@file_logger])
     @@logger.level = :warn
+    @@message_callback = nil
+
+    class << self
+      def on_message(&block)
+        @@message_callback = block
+      end
+
+      def level=(log_level)
+        @@logger.level = log_level
+      end
+
+      def level
+        @@logger.level
+      end
+    end
 
     def initialize(logged_class)
       determine_callers_name(logged_class)
@@ -33,16 +48,17 @@ module Facter
       end
     end
 
-    def self.level=(log_level)
-      @@logger.level = log_level
-    end
-
-    def self.level
-      @@logger.level
-    end
-
     def debug(msg)
-      @@logger.debug(@class_name + ' - ' + msg)
+      return unless Facter.debugging?
+
+      if msg.nil? || msg.empty?
+        invoker = caller(1..1).first.slice(/.*:\d+/)
+        self.warn "#{self.class}#debug invoked with invalid message #{msg.inspect}:#{msg.class} at #{invoker}"
+      elsif @@message_callback
+        @@message_callback.call(:debug, msg)
+      else
+        @@logger.debug(@class_name + ' - ' + msg)
+      end
     end
 
     def info(msg)
