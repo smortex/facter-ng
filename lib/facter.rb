@@ -13,6 +13,7 @@ module Facter
   @options = Options.instance
   Log.add_legacy_logger(STDOUT)
   @logger = Log.new(self)
+  @already_searched = {}
 
   class << self
     def [](name)
@@ -59,10 +60,10 @@ module Facter
     end
 
     def fact(name)
-      fact = Facter::Util::Fact.new(name)
-      val = value(name)
-      fact.add({}) { setcode { val } }
-      fact
+      # fact = Facter::Util::Fact.new(name)
+      value(name)
+      # fact.add({}) { setcode { val } }
+      # fact
     end
 
     def log_errors(missing_names)
@@ -138,6 +139,13 @@ module Facter
       LegacyFacter.trace(bool)
     end
 
+    class AlreadyResolved
+      attr_accessor :name, :value
+      def initialize(name, value)
+        @value = value
+      end
+    end
+
     def value(user_query)
       @options.refresh([user_query])
       user_query = user_query.to_s
@@ -146,7 +154,26 @@ module Facter
       fact_collection = FactCollection.new.build_fact_collection!(resolved_facts)
       splitted_user_query = Facter::Utils.split_user_query(user_query)
       fact_collection.dig(*splitted_user_query)
+
+      @already_searched[user_query] = AlreadyResolved.new(user_query, fact_collection.dig(*splitted_user_query)) unless @already_searched[user_query]
+
+      @already_searched[user_query].value = fact_collection.dig(*splitted_user_query)
+
+      @already_searched[user_query]
+      # new_hash[user_query] = LegacyFacter::Util::Fact.new(user_query)
+      # new_hash[user_query].add({}) { setcode { fact_collection } }
     end
+
+    def resolved_fact_value(resolved_facts)
+
+    end
+
+
+
+    # fact = Facter::Util::Fact.new(name)
+    # val = value(name)
+    # fact.add({}) { setcode { val } }
+    # fact
 
     def version
       version_file = ::File.join(ROOT_DIR, 'VERSION')

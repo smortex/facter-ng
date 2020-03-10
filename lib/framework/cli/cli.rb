@@ -106,9 +106,12 @@ module Facter
     desc 'query', 'Default method', hide: true
     desc '[options] [query] [query] [...]', ''
     def query(*args)
-      output, status = Facter.to_user_output(@options, *args)
-      puts output
-      exit status
+      # output, status = Facter.value('oss')
+      # puts output
+      # exit status
+      puts Facter.fact(:oss).inspect
+      puts Facter.fact(:oss).inspect
+      puts Facter.fact(:oss).value
     end
 
     desc '--version, -v', 'Print the version', hide: true
