@@ -45,6 +45,7 @@ module Facter
     def add(name, options = {}, &block)
       options[:fact_type] = :custom
       LegacyFacter.add(name, options, &block)
+      LegacyFacter.collection.invalidate_custom_facts
     end
 
     # Clears all cached values and removes all facts from memory.
@@ -55,6 +56,8 @@ module Facter
     def clear
       @already_searched = {}
       LegacyFacter.clear
+      LegacyFacter.collection.invalidate_custom_facts
+      LegacyFacter.collection.invalidate_load
     end
 
     def core_value(user_query)
@@ -131,6 +134,8 @@ module Facter
       LegacyFacter.reset
       LegacyFacter.search(*Options.custom_dir)
       LegacyFacter.search_external(Options.external_dir)
+      # LegacyFacter.invalidate_load
+      # LegacyFacter.collection.invalidate_custom_facts
       nil
     end
 
