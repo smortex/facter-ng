@@ -98,23 +98,24 @@ module LegacyFacter
         @external_facts = Facter::Utils.deep_copy(external_facts.keys)
       end
 
-
       def invalidate_custom_facts
-        @al = false
+        @valid_custom_facts = false
       end
 
-      def invalidate_load
-        @@loaded = false
+      def reload_custom_facts
+        @loaded = false
       end
 
-      @@loaded = false
+      @loaded = false
+
       # Builds a hash of custom facts
       def custom_facts
-        return @custom_facts if @al  #unless @custom_facts.nil?
-        @al = true
+        return @custom_facts if @valid_custom_facts
 
-        internal_loader.load_all unless @@loaded
-        @@loaded = true
+        @valid_custom_facts = true
+
+        internal_loader.load_all unless @loaded
+        @loaded = true
 
         custom_facts = @facts.select { |_k, v| v.options[:fact_type] }
         @custom_facts = Facter::Utils.deep_copy(custom_facts.keys)
