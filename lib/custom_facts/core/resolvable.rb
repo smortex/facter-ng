@@ -76,7 +76,12 @@ module LegacyFacter
         nil
       rescue StandardError => e
         LegacyFacter.log_exception(e, "Error while resolving custom fact #{qualified_name}: #{e.message}")
-        at_exit { exit 1 }
+        # options = Facter::Options.get[:error] = true
+        ::Facter::Options.instance.priority_options = ::Facter::Options.instance.priority_options.merge(error: :true)
+
+        ::Facter::Options.refresh
+
+        # at_exit { exit 1 }
         raise Facter::ResolveCustomFactError
       end
 

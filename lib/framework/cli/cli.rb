@@ -108,6 +108,11 @@ module Facter
     def query(*args)
       output, status = Facter.to_user_output(@options, *args)
       puts output
+      status = 1 if Options.get[:error] == :true
+
+
+      # @options.priority_options = { is_cli: true }.merge!(cli_options.map { |(k, v)| [k.to_sym, v] }.to_h)
+
       exit status
     end
 
