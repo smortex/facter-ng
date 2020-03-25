@@ -8,12 +8,12 @@ describe Facts::Debian::Os::Distro::Release do
     let(:release) { { 'full' => '9.0', 'major' => '9', 'minor' => '0' } }
 
     before do
-      allow(Facter::Resolvers::LsbRelease).to receive(:resolve).with(:release).and_return(value)
+      allow(Facter::Resolvers::OsRelease).to receive(:resolve).with(:release).and_return(value)
     end
 
     it 'calls Facter::Resolvers::LsbRelease' do
       fact.call_the_resolver
-      expect(Facter::Resolvers::LsbRelease).to have_received(:resolve).with(:release)
+      expect(Facter::Resolvers::OsRelease).to have_received(:resolve).with(:release)
     end
 
     it 'returns release fact' do
@@ -30,7 +30,7 @@ describe Facts::Debian::Os::Distro::Release do
       let(:value) { nil }
 
       before do
-        allow(Facter::Resolvers::LsbRelease).to receive(:resolve).with(:release).and_return(value)
+        allow(Facter::Resolvers::OsRelease).to receive(:resolve).with(:release).and_return(value)
       end
 
       it 'returns release fact' do

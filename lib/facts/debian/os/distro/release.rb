@@ -9,14 +9,15 @@ module Facts
           ALIASES = %w[lsbdistrelease lsbmajdistrelease lsbminordistrelease].freeze
 
           def call_the_resolver
-            fact_value = Facter::Resolvers::LsbRelease.resolve(:release)
+            fact_value = Facter::Resolvers::OsRelease.resolve(:release)
+
             return Facter::ResolvedFact.new(FACT_NAME, nil) unless fact_value
 
             versions = fact_value.split('.')
             release = {
-              'full' => fact_value,
-              'major' => versions[0],
-              'minor' => versions[1]
+                'full' => fact_value,
+                'major' => versions[0],
+                'minor' => versions[1].gsub(/^0([1-9])/, '\1')
             }
 
             [Facter::ResolvedFact.new(FACT_NAME, release),
